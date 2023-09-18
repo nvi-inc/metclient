@@ -21,8 +21,8 @@
 #
 # metclient MET client for gathering weather information.
 #
-DAEMON=/usr2/st/metclient/metclient
-LFILE=/usr2/st/metclient/metlog.ctl || exit 0
+DAEMON=/usr2/metclient/metclient
+LFILE=/usr2/control/metlog.ctl || exit 0
 PORT=50001
 HOST=localhost
 

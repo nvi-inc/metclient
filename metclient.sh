@@ -23,13 +23,13 @@
 #
 #		Modified for Debian GNU/Linux
 #
-# Version:	@(#)metc  1.0.0  07-Jul-2003  rgonzale@gemini.gsfc.nasa.gov
-# Version:	@(#)metc  1.0.1  04-May-2012  Ed.Himwich@nasa.gov
+# Version:	@(#)metc  1.0.0  07-Jul-2003  rgonzale
+# Version:	@(#)metc  1.0.1  04-May-2012  Ed.Himwich
 #
-DAEMON=/usr2/st/metclient/metclient
+DAEMON=/usr2/metclient/metclient
 NAME=metclient
 DESC="MET Client"
-LFILE=/usr2/st/metclient/metlog.ctl || exit 0
+LFILE=/usr2/control/metlog.ctl || exit 0
 PORT=50001
 HOST=localhost
 
