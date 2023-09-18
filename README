@@ -1,14 +1,11 @@
 Field System 'metclient' software.
 
-INFORMATION: 
+INFORMATION:
 -----------
 
-Field System Homepage:  http://lupus.gsfc.nasa.gov/fs
-
-The metclient will download Paroscientific, Inc. MET3 (Meteorological 
-Measurement System) and Handar TSI Company (Ultrasonic Wind Sensors) 
-information from metserver and parse it into the log file that was 
-specified by the user in the metlog.ctl file.
+The metclient will download met/wind data from metclient/gromet place
+it into the log file that was specified by the user in the metlog.ctl
+file.
 
 Read the INSTALL for installation instructions.
 
@@ -23,10 +20,10 @@ The log file name will look like this:
         02: Year
        301: day
         GG: Station
-      .log: log extension. 
+      .log: log extension.
 
 
-Each day will have it's own log file, where the Day number will be the 
+Each day will have it's own log file, where the Day number will be the
 only change to the file name.
 
 exceptions:
@@ -36,8 +33,8 @@ exceptions:
 HEADER:
 ------
 
-At the start of each new day, a new log file will be generated. The log will 
-have a header as the beginning line (each new log will begin with a header). 
+At the start of each new day, a new log file will be generated. The log will
+have a header as the beginning line (each new log will begin with a header).
 All times are UT time.
 
 2002.301.00:12:46.00:location,GGAO7108,76.8265,39.0219,14.99
@@ -51,7 +48,7 @@ All times are UT time.
    GGAO7108: Station Name
     76.8265: Longitude
     39.0219: Latitude
-      14.99: Station Elevation
+      14.99: Station Elevation (meters)
 
 
 WEATHER INFORMATION FORMAT:
@@ -69,21 +66,23 @@ WEATHER INFORMATION FORMAT:
      1014.3: Pressure in millbars.
        93.6: Humidity in percent
         0.2: Wind Speed in meters per second
-        240: Wind Direction in degrees (360) 
- 
+        240: Wind Direction in degrees (360)
 
-OTHER CLIENTS:
--------------
 
-Any client can receive weather and wind sensor data from this server by 
-using PORT 30384.
+Server data
+-----------
 
-Clients data format: 
+The server is expected to format the data (units above) as:
 
    Temperature,Pressure,Humidity,windSpeed,windDirection
 
+For example:
+
    4.9,1015.0,90.6,1.2,301
 
+Null fields for missing data:
+
+   4.9,1015.0,90.6,,
 
 ERRORS:
 -------
@@ -92,18 +91,18 @@ Errors from standalone weather logging client will go to /tmp/metclient.error
 file, /var/log/syslog, and an email will be sent to the operator. metclient
 WILL NOT exit on any errors.
 
-For the Field System. All errors are handle by the Field System and logged 
+For the Field System. All errors are handle by the Field System and logged
 like any other observing error.
 
 PROBLEMS:
 --------
 
-If you get an error regarding the metserver and/or the metclient, that you 
+If you get an error regarding the metserver and/or the metclient, that you
 can't correct and you want to stop either or both of the programs you will
 need to kill the metserver and/or the metclient manually. They will not exit
 on errors.
 
- (This will give you the PID's for both the metserver and/or the metclient, 
+ (This will give you the PID's for both the metserver and/or the metclient,
   whichever is running at the time:)
 
    prompt> log in as root
@@ -118,5 +117,3 @@ example:
    prog     13815 13533  0 17:43 pts/3    00:00:00 grep met
 
    prompt> kill -15 13526 13630
-
-If you have any problems, you can contact Ed.Himwich@nasa.gov.
