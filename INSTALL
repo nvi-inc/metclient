@@ -159,10 +159,10 @@ STARTING CLIENT:
     ----------------------------------------------------------------------
     If you name the control file by any other name, other then 'metlog.ctl'
     and/or you don't put it the '/usr2/control' directory you MUST
-    MUST change the metclient_systemd.sh script in /etc/systemd/system
+    MUST change the metclient_systemd.sh script in /usr/local/sbin
 
     Likewise if you aren't using the default network port you must specify
-    it in the metclient_systemd.sh script in /etc/systemd/system/
+    it in the metclient_systemd.sh script in /usr/local/sbin
     ----------------------------------------------------------------------
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -170,6 +170,9 @@ STARTING CLIENT:
     prompt> cd /usr2/metclient
     prompt> cp -i metclient.service /etc/systemd/system/
     prompt> chmod 644 /etc/systemd/system/metclient.service
+    prompt> cp -i metclient_systemd.sh /usr/local/sbin
+    prompt> chmod 744 /usr/local/sbin/metclient_systemd.sh
+
     prompt> systemctl start metclient
     prompt> systemctl enable metclient
 
