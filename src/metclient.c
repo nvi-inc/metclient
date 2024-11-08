@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2023 NVI, Inc.
+ * Copyright (c) 2020, 2023, 2024 NVI, Inc.
  *
  * This file is part of VLBI metclient
  * (see http://github.com/nvi-inc/metclient).
@@ -53,7 +53,7 @@
    are two lines that can be commented to control how the client is run, 
    the one defining USE_GETADDRINFO and the one defining USE_GETHOSTBYNAME.
    When using USE_GETHOSTBYNAME the client could be called with the
-   hostname or ip address for the server (localhost is used as default).
+   hostname or ip address for the server (met_server is used as default).
    When using USE_GETHOSTBYADDR the client has to be called with the ip-address
    for the server (no default is used for this one). */
 #define USE_GETADDRINFO          /* This is the line to be commented. */
@@ -162,7 +162,7 @@ file_err:
     port=atoi(argv[2]);
 
   if (argc<4)
-    strcpy(host_str, "localhost"); /* Default value */
+    strcpy(host_str, "met_server"); /* Default value */
   else
     strcpy(host_str, argv[3]);
 

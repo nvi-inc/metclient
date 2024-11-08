@@ -89,16 +89,20 @@ STARTING CLIENT:
             it after the first parameter, 50001 is the default.
           The third parameter is the host for the server, if you are not
             using the default you must specify it after the second
-            parameter. Default value is 'localhost'. The host can be
-            either a hostname, or an IPv4 address in standard dot notation.
-            If the metserver is run on the same computer 'localhost' will
-            always work. Providing the name or ip-address of the computer
-            will only let the metclient connect to the metserver if the
-            server enabled remote connections.
-
+            parameter. Default value is the alias 'met_server', which is the
+            recommended value. This alias should also be used by the met. data
+            server, gromet or metserver (if it running on this machine), and
+            all clients. If the server is running on this machine, the alias
+            should be put on the internal interface (localhost) line in
+            /etc/hosts if data is only be served to the localhost. It should be
+            put on the external interface line (with the machine's IP address)
+            if it is also being served to other hosts. This makes it easy to
+            switch interfaces, just change the line used and restart the server
+            and all its clients. If the server is running on different machine,
+            put 'met_server' on the line in /etc/hosts for that machine.
 
    prompt> log in as root.
-   prompt> /usr2/metclient/metclient /usr2/control/metlog.ctl 50001 localhost &
+   prompt> /usr2/metclient/metclient /usr2/control/metlog.ctl 50001 met_server &
 
 2.) If you would like metclient to startup at boot time and your system uses
     init.d, which is deprecated. See #3 below for systemd, which is preferred,

@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright (c) 2020, 2023 NVI, Inc.
+# Copyright (c) 2020, 2023, 2024 NVI, Inc.
 #
 # This file is part of VLBI metclient
 # (see http://github.com/nvi-inc/metclient).
@@ -31,7 +31,7 @@ NAME=metclient
 DESC="MET Client"
 LFILE=/usr2/control/metlog.ctl || exit 0
 PORT=50001
-HOST=localhost
+HOST=met_server
 
 test -x $DAEMON || exit 0
 test -f $LFILE || exit 0
