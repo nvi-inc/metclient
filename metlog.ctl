@@ -1,5 +1,5 @@
 *metget.ctl
-gg            station two-letter code
+gg            station two-character code
 0             reserved for wind period?
 60            logging period for all data (seconds)
 /usr2/log/wx  directory for logging data
