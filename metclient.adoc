@@ -1,0 +1,360 @@
+//
+// Copyright (c) 2024 NVI, Inc.
+//
+// This file is part of the VLBI metclient package.
+// (see http://github.com/nvi-inc/metclient).
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+
+:doctype: book
+
+= DRAFT metclient Installation for FS Computers
+E. Himwich
+Version 1.0 - November 2024
+
+:sectnums:
+:experimental:
+:downarrow: &downarrow;
+:uparrow: &uparrow;
+
+:toc:
+
+:sectnums!:
+== Revision history
+
+* 1.0 -- November 2024 -- Initial version
+
+:sectnums:
+== Introduction
+
+This document provides instructions for installing _metclient_ (a met.
+data recorder) for Field System computers. It is assumed that there
+are both _operational_ and _spare_ computers in use. They are usually
+running the _fs1_ and _fs2_ systems, respectively. In the instructions
+in this document, you should of course replace those names with the
+ones of your systems, if different. If there is only one system, you
+can omit the actions involving _fs2_.  If you do install on _fs2_,
+_metclient_ would normally be disabled there unless operations are
+moved there.
+
+The instructions in this document only cover installation on systems
+using `systemd`. Use of `init.d` is deprecated, but instructions for
+using it can be found in the old _INSTALL_ document at:
+https://github.com/nvi-inc/metclient/blob/main/INSTALL.
+
+The installation process uses the _recoverable testing_ procedure of
+FSL11 (or FSL10) with a RAID to enable easy recovery in case of a
+problem. This has the advantage that if (i) actions are missing from
+the _metclient_ installation procedure in this document, or (ii)
+errors occur, and either or both can't be recovered from directly, it
+is relatively easy to return to the original state and start over. If
+you are using some other FSL__x__ (before FSL10) or don't have a RAID,
+you should skip using the recoverable testing procedure or substitute
+a different one.
+
+== Reverting the installation
+
+If you are using the _recoverable_ testing procedure and it is not
+possible finish the installation before the next operational use of
+the system or disk rotation, the systems can be reverted to their
+previous configuration. For each system that had the primary disk
+_dropped_, follow the _failed_ branch of the recoverable testing
+procedure for FSL11 at
+https://nvi-inc.github.io/fsl11/raid.html#_recoverable_testing (or for
+FSL10 at:
+https://nvi-inc.github.io/fsl10/raid.html#_recoverable_testing).
+
+It will require several hours for the refresh operation to complete.
+The system can be used for operations, but not a disk rotation, while
+the refresh is in progress. Later, the installation can be tried again
+from scratch when it is convenient.
+
+== fs1 installation
+
+All work in this section is to be performed on the _fs1_ system.
+
+=== Preparing fs1
+
+If you are not using an FSL10, or later, RAID configuration, skip this
+step, or substitute your own test and recovery method.
+
+. Follow the directions for the recoverable test procedure for FSL11
+at https://nvi-inc.github.io/fsl11/raid.html#_recoverable_testing (or
+for FSL10 at
+https://nvi-inc.github.io/fsl10/raid.html#_recoverable_testing.
+
+. Once the primary disk has been dropped from the RAID, move onto the
+next step, <<Installing metclient on fs1>>, below.
+
+=== Installing metclient on fs1
+
+. Remove any previous installation of `metclient`.
+
+. As _root_, download _metclient_:
+
+ cd /usr2
+ git clone https://github.com/nvi-inc/metclient
+ chown -R prog.rtx metclient
+
+. As _root_, install _metclient_ as a service:
+
+ cd /usr2/metclient
+ cp -i metclient.service /etc/systemd/system/
+ chmod 644 /etc/systemd/system/metclient.service
+ cp -i metclient_systemd.sh /usr/local/sbin
+ chmod 744 /usr/local/sbin/metclient_systemd.sh
+
++
+
+NOTE: If you want to change the host name for the server (which is not
+recommended), update _/usr/local/sbin/metclient_systemd.sh_.
+
+. As _root_, install the alias for the met. server.
+
++
+
+This is normally taken care of by the installation of _gromet_ on this
+machine. However, if _gromet_ is serving met. data from a different
+machine, add the alias, usually `met_server` to that machine's line in
+_/etc/hosts_. 
+
++
+
+[CAUTION]
+====
+
+Normally, _fs1_ and _fs2_ have the alias for the server on
+the same line in _/etc/hosts_ whether that is the internal interface
+(`localhost`) or the external interface (this machine's IP address) or
+the address of some other machine. They do _not_ normally point to the
+other of _fs1_ or _fs2_, if it is the one running _gromet_.
+
+For systems with RDBEs where _gromet_ is being use on the active
+systems for operations, this enables using _set_telegraf_ (see:
+https://nvi-inc.github.io/set_telegraf/) to transition operations
+between _fs1_ and _fs2_ without making other changes.
+
+====
+
+. As _prog_, make _metclient_:
+
+ cd /usr2/metclient
+ make
+
+. As _oper_, install and customize  _/usr2/control/metlog.ctl_:
+
+.. Copy the file:
+
+ cd /usr2/metclient
+ cp -i metlog.ctl /usr2/control
+
++
+
+NOTE: The `-i` option of _cp_ will give you a chance to abort before
+overwriting an existing _metlog.ctl_ file.
+
+.. Edit _/usr2/control/metlog.ctl_.
+
++
+
++
+
+Update the following items:
+
++
+
++
+
+[disc]
+* Station two-character code
+* Station Name
+* Longitude (West is positive)
+* Latitude
+* Station Elevation
+
+. As _root_, start and enable the _gromet_ service:
+
+    systemctl start metclient
+    systemctl enable metclient
+
+== Testing metclient on fs1
+
+Check that there is a file _/usr2/log/wx<YY><DDD><sc>.log_ (_<YY>_ is
+the last two digits of the year, _<DDD>_ is the day of the year, and
+_<sc>_ is the two-character station code; for example,
+_/usr2/log/wx/wx24317k2.log_ for station `k2`).
+
+You should be able to list the file with `*tail -f ...*` and see one
+line being added per minute with the met. values.
+
+== fs2 installation
+
+Once _fs1_ has been successfully set-up, the _fs2_ system, usually
+running in the _spare_ computer, can be set-up. Do not proceed with
+this section until _metclient_ is working on _fs1_.
+
+=== Preparing fs2
+
+Follow the instructions in the <<Preparing fs1>> step above, but this
+time performing them on _fs2_. Then proceed with the next step below
+<<Changes needed before installing metclient on fs2>>.
+
+=== Changes needed before installing metclient on fs2
+
+For this part of the installation it will be necessary to take some
+additional actions, all as _root_:
+
+. On _fs1_:
+
+.. Stop and disable _metclient_:
+
+    systemctl stop metclient
+    systemctl disable metclient
+
+.. Stop and disable _gromet_:
+
++
+
+NOTE: if you are not using _gromet_ on this system, skip this step.
+
+    systemctl stop gromet
+    systemctl disable gromet
+
+. On _fs2_:
+
+.. Start and enable _gromet_:
+
++
+
+NOTE: if you are not using _gromet_ on this system, skip this step.
+
+    systemctl start gromet
+    systemctl enable gromet
+
+=== Installing metclient on fs2
+
+Follow the directions in the <<Installing metclient on fs1>> step
+above, but this time performing the actions on _fs2_.
+
+NOTE: If the _/usr2_ partition on your _fs2_ system is periodically
+overwritten with _refresh_spare_usr2_, as it should be, all of the
+setup on _fs2_, except for the service, will be replaced with the
+setup on _fs1_. This is expected and should not cause a problem.
+
+== Testing metclient on fs2
+
+Follow the directions in <<Testing metclient on fs1>>, but perform the
+ actions on _fs2_.
+
+== Finishing up
+
+This section covers the actions to follow once _metclient_ has been
+tested successfully on _both_ _fs1_ and _fs2_. Al actions are
+performed as _root_.
+
+NOTE: if you are not using _gromet_ on these systems, skip those
+commands.
+
+=== Finalizing fs2
+
+. Stop and disable _gromet_ and _metclient_:
+
+    systemctl stop metclient
+    systemctl disable metclient
+    systemctl stop gromet
+    systemctl disable gromet
+
+=== Finalizing fs1
+
+. Start and enable _gromet_ and _metclient_:
+
+    systemctl start gromet
+    systemctl enable gromet
+    systemctl start metclient
+    systemctl enable metclient
+
+. Reverify the results of the <<Testing metclient on fs1>> section
+above.
+
+=== Restoring RAIDs
+
+If everything is still working, follow the _successful_ branch in the
+recoverable test procedure, to recover the RAIDs for FSL11 at
+https://nvi-inc.github.io/fsl11/raid.html#_recoverable_testing (or for
+FSL10 at
+https://nvi-inc.github.io/fsl10/raid.html#_recoverable_testing):
+
+. Recover the RAID on _fs1_.
+
+. Recover the RAID on _fs2_.
+
+[appendix]
+= Changing the Active System for metclient
+
+If you have an operational (_fs1_) and a spare (_fs2_) system. You can
+switch which system is running the _metclient_ service. There are
+three possible cases:
+
+. For systems with RDBEs that running _telegraf_, you can use
+_set_telegraf_, which is described at
+https://nvi-inc.github.io/set_telegraf/). Once _set_telegraf_ has been
+installed, you can follow the directions at
+https://nvi-inc.github.io/set_telegraf/#_use_of_set_telegraf for how
+to use it.
+
+. For systems running _metclient_ and _gromet_, follow the
+instructions below.
+
+. For systems only running _metclient_, follow the instructions below,
+but omit the commands for _gromet_.
+
+=== Instructions for systems without telegraf
+
+All commands are run by _root_:
+
+CAUTION: _gromet_ should be run on at most  one system at a time. So
+be sure to stop it on the machine that it was running on before
+starting it on another.
+
+. On the machine where _metclient_, and _gromet_, are running, disable
+and stop them:
+
++
+
+NOTE: Omit the commands for _gromet_ if it is not being used on your
+system.
+
++
+
+CAUTION: If this machine isn't available, enter these commands once it
+becomes available again.
+
+ systemctl disable metclient
+ systemctl stop metclient
+ systemctl disable gromet
+ systemctl stop gromet
+
+. On the machine where you want to run _metclient_, and _gromet_,
+enable and start them:
+
++
+
+NOTE: Omit the commands for _gromet_ if it is not being used on your
+system.
+
+ systemctl enable gromet
+ systemctl start gromet
+ systemctl enable metclient
+ systemctl start metclient

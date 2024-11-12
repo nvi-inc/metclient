@@ -3,6 +3,11 @@ GENERAL INSTALLATION INSTRUCTIONS
 Installation is fairly simple. This software can also be run without any
 Field System software.
 
+NB: This document is now superseded by
+https://nvi-inc.github.io/metclient/metclient.html for systemd
+installations. The use of init.d is deprecated, but is covered in
+this, the current file.
+
 1.) Install the Client first '/usr2/metclient'
 
 2.) Make sure all requirements listed above are met.
@@ -157,6 +162,9 @@ STARTING CLIENT:
 3.) If you would like metclient to startup at boot time and your system uses
     systemd, which is preferred. See #2 above for init.d, which is deprecated,
     instructions.
+
+    NB: This document is now superseded by
+    https://nvi-inc.github.io/metclient/metclient.html for systemd installations.
 
     2nd WARNING-2nd WARNING-2nd WARNING-2nd WARNING-2nd WARNING-2nd WARNING:
     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

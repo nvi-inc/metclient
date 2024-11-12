@@ -9,6 +9,11 @@ file.
 
 Read the INSTALL for installation instructions.
 
+NB: The INSTALL file is now superseded by
+https://nvi-inc.github.io/metclient/metclient.html) for systemd
+installations. The use of init.d is deprecated, but is covered in
+the INSTALL file.
+
 LOG FILE NAME:
 -------------
 
